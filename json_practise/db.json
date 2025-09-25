@@ -1,0 +1,40 @@
+{
+  "users": [
+    {
+      "name": "Suhail",
+      "age": 25,
+      "email": "suhail@gmail.com",
+      "id": "1"
+    },
+    {
+      "name": "Aman",
+      "age": 27,
+      "email": "aman@gmail.com",
+      "id": "2"
+    },
+    {
+      "name": "Priya",
+      "age": 22,
+      "email": "priya1@gmail.com",
+      "id": "5bae"
+    },
+    {
+      "name": "Priya",
+      "age": 22,
+      "email": "priya2@gmail.com",
+      "id": "6a50"
+    },
+    {
+      "name": "Priya",
+      "age": 22,
+      "email": "priya3@gmail.com",
+      "id": "e29d"
+    },
+    {
+      "name": "chuunu",
+      "age": 26,
+      "email": "chuunu@gmail.com",
+      "id": "9270"
+    }
+  ]
+}

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Enroll in Course</title>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 40px;
+      padding: 40px;
+      background: linear-gradient(135deg, #e3f2fd, #e8f5e9);
+      min-height: 100vh;
+    }
+
+    
+    .form-card {
+      background: white;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      width: 350px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .form-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+    }
+    .form-card h2 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: center;
+      color: #2c3e50;
+    }
+    .form-card input, 
+    .form-card select, 
+    .form-card button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: 0.2s;
+    }
+    .form-card input:focus, 
+    .form-card select:focus {
+      outline: none;
+      border-color: #4CAF50;
+      box-shadow: 0 0 6px rgba(76, 175, 80, 0.4);
+    }
+    .form-card button {
+      background: #4CAF50;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      border: none;
+      border-radius: 8px;
+      transition: background 0.3s ease;
+    }
+    .form-card button:hover {
+      background: #43a047;
+    }
+
+    #course {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+#course:hover {
+  border-color: #4CAF50;
+  background-color: #f9fff9;
+}
+
+#course:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 4px rgba(67, 75, 109, 0.4);
+}
+
+
+    
+    table {
+      border-collapse: collapse;
+      width: 800px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+    }
+    table th, table td {
+      border: 1px solid #eee;
+      padding: 12px;
+      text-align: center;
+      font-size: 15px;
+    }
+    table th {
+      background: #4CAF50;
+      color: white;
+      font-size: 16px;
+    }
+    table tr:nth-child(even) { background: #f9f9f9; }
+    table tr:hover { background: #e8f5e9; }
+.delete-btn:hover{
+    color: #d32f2f;
+}
+    
+    .action-btn {
+      padding: 6px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: bold;
+      transition: 0.2s;
+    }
+  
+    .delete { background: #dc5c55; color: white; }
+    .delete:hover { background: #d32f2f; }
+  </style>
+</head>
+<body>
+  
+  <div class="form-card">
+    <h2>Enroll in Course</h2>
+    <form id="userForm">
+      <input type="text" id="name" placeholder="Full Name" required>
+      <input type="number" id="age" placeholder="Age" required>
+      <select id="course" required>
+        <option value="">Select Course</option>
+        <option value="HTML">HTML</option>
+        <option value="CSS">CSS</option>
+        <option value="JavaScript">JavaScript</option>
+      </select>
+      <input type="tel" id="phone" placeholder="Phone Number" required>
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+
+  <div class="dashboard" id="dashboard"></div>
+
+  <script>
+    const url = "http://localhost:3000/users";
+    let editUserId = null;
+    const userForm = document.getElementById("userForm");
+    const dashboard = document.getElementById("dashboard");
+
+    async function fetchUsers() {
+      try {
+        const res = await axios.get(url);
+        renderUsers(res.data);
+      } catch (err) {
+        console.log("Error fetching users:", err);
+      }
+    }
+
+    userForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const age = Number(document.getElementById("age").value);
+      const email = document.getElementById("email").value;
+
+      try {
+        if (editUserId) {
+          await axios.put(`${url}/${editUserId}`, { name, age, email });
+          editUserId = null;
+          userForm.querySelector("button").textContent = "Submit";
+        } else {
+          await axios.post(url, { name, age, email });
+        }
+        userForm.reset();
+        fetchUsers();
+      } catch (err) {
+        console.log("Error saving user:", err);
+      }
+    });
+
+    async function deleteUser(id) {
+      try {
+        await axios.delete(`${url}/${id}`);
+        fetchUsers();
+      } catch (err) {
+        console.log("Error deleting user:", err);
+      }
+    }
+
+    function renderUsers(users) {
+      dashboard.innerHTML = "";
+      users.forEach(user => {
+        const card = document.createElement("div");
+        card.className = "user-card";
+        card.innerHTML = `
+          <h3>${user.name}</h3>
+          <p>Age: ${user.age}</p>
+          <p>Email: ${user.email}</p>
+          <button class="edit-btn">Edit</button>
+          <button class="delete-btn">Delete</button>
+        `;
+        card.querySelector(".edit-btn").addEventListener("click", () => {
+          document.getElementById("name").value = user.name;
+          document.getElementById("age").value = user.age;
+          document.getElementById("email").value = user.email;
+          editUserId = user.id;
+          userForm.querySelector("button").textContent = "Update";
+        });
+        card.querySelector(".delete-btn").addEventListener("click", () => deleteUser(user.id));
+        dashboard.appendChild(card);
+      });
+    }
+
+    fetchUsers();
+  </script>
+
+=======
+  <div>
+    <table>
+      <thead>
+        <tr>
+          <th>Sr.No</th>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Course</th>
+          <th>Phone No</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="userTableBody"></tbody>
+    </table>
+  </div>
+
+  <script src="./server.js"></script>
+
+</body>
+</html>
